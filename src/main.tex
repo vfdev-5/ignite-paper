@@ -87,11 +87,48 @@ the input dataset and controlling the loop with event handlers (in contrast to o
 
 ...
 
+In the following sections we discuss Ignite's design and its roadmap, finally we give some examples of usage of the library.
+
 \section{Design}
 % \label{sec:headings}
 % See Section \ref{sec:headings}.
 
-\emph{Ignite} is a high-level library ...
+\emph{Ignite} is a high-level open-source library written in Python (supports 2.7 and 3.x versions) and structured of two modules:
+
+- core \texttt{ignite} module \\
+- \texttt{ignite.contrib} module
+
+\subsubsection{Core module}
+
+The \emph{essense} of Ignite is the class \texttt{ignite.engine.Engine} an abstraction that loops a given number of times over provided input data, 
+executes a processing function on a batch and returns a result:
+
+\begin{verbatim}
+while epoch < max_epochs:
+    # run once on data
+    for batch in data:
+        output = process_function(batch)
+\end{verbatim}
+
+A regular training loop can be replaced by a trainer engine that loops multiple times over the training dataset and updates model parameters. 
+For example, model trainer for a supervised task: 
+
+\begin{verbatim}
+def update_model(trainer, batch):
+    model.train()
+    optimizer.zero_grad()
+    x, y = prepare_batch(batch)
+    y_pred = model(x)
+    loss = loss_fn(y_pred, y)
+    loss.backward()
+    optimizer.step()
+    return loss.item()
+
+trainer = Engine(update_model)
+trainer.run(data, max_epochs=100)
+\end{verbatim}
+    
+\subsubsection{Contrib module}
 
 
 \subsection{Roadmap}
