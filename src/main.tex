@@ -11,6 +11,8 @@
 \usepackage{amsfonts}       % blackboard math symbols
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
 \usepackage{microtype}      % microtypography
+\usepackage{natbib}         % bibtex
+
 
 \title{\emph{Ignite} your PyTorch neural networks}
 
@@ -18,9 +20,7 @@
 %\date{} 					% Or removing it
 
 \author{
-  Victor Fomin\thanks{Use footnote for providing further
-    information about author (webpage, alternative
-    address)---\emph{not} for acknowledging funding agencies.} \\
+  Victor Fomin\thanks{Github account: https://github.com/vfdev-5} \\
   Magellium \\
   Toulouse, France \\
   \texttt{vfdev.5@gmail.com} \\
@@ -52,124 +52,156 @@
 \maketitle
 
 \begin{abstract}
-We introduce \emph{PyTorch-Ignite} open-source library to help with training neural networks in PyTorch. 
-In the spirit of making the "common things easy and the hard things possible"\footnote{Similarly to Perl's secondary slogan: 
+Although deep learning frameworks present different abstraction levels to work with, high-level libraries built on these frameworks
+can simplify boilerplate code for the most of common tasks. In this work we introduce \texttt{pytorch-ignite} open-source library to help 
+with training neural networks in PyTorch. In the spirit of making the "common things easy and the hard things possible"\footnote{Similarly to Perl's secondary slogan: 
 "Easy things should be easy, and hard things should be possible."} Ignite aims to simplify the writing of full-featured training loops
-to a few lines of code.
+to a few lines of code. In addition to common functionalities such as metrics, checkpointing, parameter scheduling etc it proposes 
+a modular approach to structure the training code without the boilerplate. \url{https://github.com/pytorch/ignite}
 \end{abstract}
-
 
 % keywords can be removed
 \keywords{deep learning \and machine learning \and pytorch \and opensource software}
 
+\section{Background}
 
-\section{Introduction}
-h sdjhvsjhdcjsbdcbsjhdc js  sjd hjs dj shj djshjd jdhs hjs
+In computer science high-level programming gives a strong abstraction from low-level details. It may use more natural elements, hide entirely 
+a part of computing systems, aiming the purpose to make the process of developing a program simpler and more understandable. 
+In the same way, the most of low-level machine/deep learning frameworks has high-level libraries to facilitate some aspects of the research and applications:
+\href{https://github.com/Theano/Theano}{Theano} $\rightarrow$ \href{https://github.com/Lasagne/Lasagne}{Lasagne}, 
+\href{https://github.com/keras-team/keras}{Keras}; \href{https://github.com/apache/incubator-mxnet}{MXNet} $\rightarrow$ 
+\href{https://github.com/gluon-api/gluon-api}{Gluon}; \href{https://www.tensorflow.org/}{TensorFlow} $\rightarrow$ 
+\href{https://github.com/keras-team/keras}{Keras}, \href{https://github.com/tensorflow/tensorflow/tree/master/tensorflow/contrib/slim}{slim}, 
+\href{https://github.com/tensorpack/tensorpack}{Tensorpack}, etc.
 
-\section{Headings: first level}
-\label{sec:headings}
+\href{https://github.com/pytorch/pytorch}{PyTorch}, a deep learning library with automatic differentiation (\cite{paszke2017automatic}), is already designed 
+to enable rapid research on machine/deep learning model and gives a mix of both abstractions. However, user's code for model's training and validation 
+using PyTorch can be a boilerplate, less flexible and, potentially, error prone. There is a number of 
+open-source high-level libraries that proposes various APIs to facilitate research and reuse the code: \href{https://github.com/pytorch/tnt/}{tnt}, \href{https://github.com/ncullen93/torchsample}{torchsample}, 
+\href{https://github.com/ecs-vlc/torchbearer}{torchbearer}, \href{https://github.com/fastai/fastai}{fastai}, 
+\href{https://github.com/pytorch/ignite}{pytorch-ignite}, etc.
 
-See Section \ref{sec:headings}.
+In this work we introduce \texttt{pytorch-ignite} (or simply \emph{Ignite}) library to ease and lighten the training and validation code of neural networks 
+in PyTorch without the boilerplate. Originally, inspired by \href{https://github.com/pytorch/tnt/}{tnt}, it is similarly based on an abstraction to run over 
+the input dataset and controlling the loop with event handlers (in contrast to other libraries that use callbacks).
 
-\subsection{Headings: second level}
-\begin{equation}
-\xi _{ij}(t)=P(x_{t}=i,x_{t+1}=j|y,v,w;\theta)= {\frac {\alpha _{i}(t)a^{w_t}_{ij}\beta _{j}(t+1)b^{v_{t+1}}_{j}(y_{t+1})}{\sum _{i=1}^{N} \sum _{j=1}^{N} \alpha _{i}(t)a^{w_t}_{ij}\beta _{j}(t+1)b^{v_{t+1}}_{j}(y_{t+1})}}
-\end{equation}
+...
 
-\subsubsection{Headings: third level}
+\section{Design}
+% \label{sec:headings}
+% See Section \ref{sec:headings}.
 
-\paragraph{Paragraph}
-
-
-\section{Examples of citations, figures, tables, references}
-\label{sec:others}
-\cite{kour2014real,kour2014fast} and see \cite{hadash2018estimate}.
-
-The documentation for \verb+natbib+ may be found at
-\begin{center}
-  \url{http://mirrors.ctan.org/macros/latex/contrib/natbib/natnotes.pdf}
-\end{center}
-Of note is the command \verb+\citet+, which produces citations
-appropriate for use in inline text.  For example,
-\begin{verbatim}
-   \citet{hasselmo} investigated\dots
-\end{verbatim}
-produces
-\begin{quote}
-  Hasselmo, et al.\ (1995) investigated\dots
-\end{quote}
-
-\begin{center}
-  \url{https://www.ctan.org/pkg/booktabs}
-\end{center}
+\emph{Ignite} is a high-level library ...
 
 
-\subsection{Figures}
-See Figure \ref{fig:fig1}. Here is how you add footnotes. \footnote{Sample of the first footnote.}
+\subsection{Roadmap}
 
-\begin{figure}
-  \centering
-  \fbox{\rule[-.5cm]{4cm}{4cm} \rule[-.5cm]{4cm}{0cm}}
-  \caption{Sample figure caption.}
-  \label{fig:fig1}
-\end{figure}
+% \subsubsection{Headings: third level}
 
-\subsection{Tables}
-See awesome Table~\ref{tab:table}.
-
-\begin{table}
- \caption{Sample table title}
-  \centering
-  \begin{tabular}{lll}
-    \toprule
-    \multicolumn{2}{c}{Part}                   \\
-    \cmidrule(r){1-2}
-    Name     & Description     & Size ($\mu$m) \\
-    \midrule
-    Dendrite & Input terminal  & $\sim$100     \\
-    Axon     & Output terminal & $\sim$10      \\
-    Soma     & Cell body       & up to $10^6$  \\
-    \bottomrule
-  \end{tabular}
-  \label{tab:table}
-\end{table}
-
-\subsection{Lists}
-\begin{itemize}
-\item Lorem ipsum dolor sit amet
-\item consectetur adipiscing elit. 
-\item Aliquam dignissim blandit est, in dictum tortor gravida eget. In ac rutrum magna.
-\end{itemize}
+% \paragraph{Paragraph}
 
 
-\bibliographystyle{unsrt}  
-%\bibliography{references}  %%% Remove comment to use the external .bib file (using bibtex).
+\section{Examples}
+
+
+\section{Conclusion}
+
+
+\subsection{Acknowledgments} 
+
+We would like to acknowledge 
+
+
+% \section{Examples of citations, figures, tables, references}
+% \label{sec:others}
+% \cite{kour2014real,kour2014fast} and see \cite{hadash2018estimate}.
+
+% The documentation for \verb+natbib+ may be found at
+% \begin{center}
+%   \url{http://mirrors.ctan.org/macros/latex/contrib/natbib/natnotes.pdf}
+% \end{center}
+% Of note is the command \verb+\citet+, which produces citations
+% appropriate for use in inline text.  For example,
+% \begin{verbatim}
+%    \citet{hasselmo} investigated\dots
+% \end{verbatim}
+% produces
+% \begin{quote}
+%   Hasselmo, et al.\ (1995) investigated\dots
+% \end{quote}
+
+% \begin{center}
+%   \url{https://www.ctan.org/pkg/booktabs}
+% \end{center}
+
+
+% \subsection{Figures}
+% See Figure \ref{fig:fig1}. Here is how you add footnotes. \footnote{Sample of the first footnote.}
+
+% \begin{figure}
+%   \centering
+%   \fbox{\rule[-.5cm]{4cm}{4cm} \rule[-.5cm]{4cm}{0cm}}
+%   \caption{Sample figure caption.}
+%   \label{fig:fig1}
+% \end{figure}
+
+% \subsection{Tables}
+% See awesome Table~\ref{tab:table}.
+
+% \begin{table}
+%  \caption{Sample table title}
+%   \centering
+%   \begin{tabular}{lll}
+%     \toprule
+%     \multicolumn{2}{c}{Part}                   \\
+%     \cmidrule(r){1-2}
+%     Name     & Description     & Size ($\mu$m) \\
+%     \midrule
+%     Dendrite & Input terminal  & $\sim$100     \\
+%     Axon     & Output terminal & $\sim$10      \\
+%     Soma     & Cell body       & up to $10^6$  \\
+%     \bottomrule
+%   \end{tabular}
+%   \label{tab:table}
+% \end{table}
+
+% \subsection{Lists}
+% \begin{itemize}
+% \item Lorem ipsum dolor sit amet
+% \item consectetur adipiscing elit. 
+% \item Aliquam dignissim blandit est, in dictum tortor gravida eget. In ac rutrum magna.
+% \end{itemize}
+
+
+\bibliographystyle{abbrv}
+\bibliography{main}  %%% Remove comment to use the external .bib file (using bibtex).
 %%% and comment out the ``thebibliography'' section.
 
 
 %%% Comment out this section when you \bibliography{references} is enabled.
-\begin{thebibliography}{1}
+% \begin{thebibliography}{1}
 
-\bibitem{kour2014real}
-George Kour and Raid Saabne.
-\newblock Real-time segmentation of on-line handwritten arabic script.
-\newblock In {\em Frontiers in Handwriting Recognition (ICFHR), 2014 14th
-  International Conference on}, pages 417--422. IEEE, 2014.
+% \bibitem{paszke2017}
+% Adam Paszke, Sam Gross, Soumith Chintala, Gregory Chanan, Edward Yang, ZacharyDeVito, Zeming Lin, Alban Desmaison, Luca Antiga, and Adam Lerer. Automatic differentiation in pytorch, 2017.
+% George Kour and Raid Saabne.
+% \newblock Real-time segmentation of on-line handwritten arabic script.
+% \newblock In {\em Frontiers in Handwriting Recognition (ICFHR), 2014 14th
+%   International Conference on}, pages 417--422. IEEE, 2014.
 
-\bibitem{kour2014fast}
-George Kour and Raid Saabne.
-\newblock Fast classification of handwritten on-line arabic characters.
-\newblock In {\em Soft Computing and Pattern Recognition (SoCPaR), 2014 6th
-  International Conference of}, pages 312--318. IEEE, 2014.
+% % \bibitem{kour2014fast}
+% % George Kour and Raid Saabne.
+% % \newblock Fast classification of handwritten on-line arabic characters.
+% % \newblock In {\em Soft Computing and Pattern Recognition (SoCPaR), 2014 6th
+% %   International Conference of}, pages 312--318. IEEE, 2014.
 
-\bibitem{hadash2018estimate}
-Guy Hadash, Einat Kermany, Boaz Carmeli, Ofer Lavi, George Kour, and Alon
-  Jacovi.
-\newblock Estimate and replace: A novel approach to integrating deep neural
-  networks with existing applications.
-\newblock {\em arXiv preprint arXiv:1804.09028}, 2018.
+% % \bibitem{hadash2018estimate}
+% % Guy Hadash, Einat Kermany, Boaz Carmeli, Ofer Lavi, George Kour, and Alon
+% %   Jacovi.
+% % \newblock Estimate and replace: A novel approach to integrating deep neural
+% %   networks with existing applications.
+% % \newblock {\em arXiv preprint arXiv:1804.09028}, 2018.
 
-\end{thebibliography}
+% \end{thebibliography}
 
 
 \end{document}
